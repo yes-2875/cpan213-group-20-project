@@ -7,94 +7,77 @@ import TripCard from "../components/TripCard";
 
 export default function HomeScreen({ navigation }) {
     return (
-        <ScrollView
-            style={styles.container}
-            contentContainerStyle={styles.content}
-            showsVerticalScrollIndicator={false}
-        >
-            <Header
-                title="Your next adventure awaits!"
-                subtitle="Plan your escape into nature."
-            />
+        <ScrollView style={styles.container}>
+            <View style={styles.content}>
+                <Header
+                    title="Welcome to CampMate!"
+                    subtitle="Plan your next camping adventure."
+                />
 
-            {/* Welcome section */}
-            <View style={styles.welcomeCard}>
-                <Text style={styles.welcomeTitle}>Explore the outdoors 🌲</Text>
+                <Text style={styles.welcomeTitle}>Explore Nature</Text>
                 <Text style={styles.welcomeText}>
-                    Find beautiful camping destinations and prepare
-                    for your next adventure.
+                    Find camping locations and prepare for your next trip.
                 </Text>
 
                 <Pressable
-                    style={styles.exploreButton}
                     onPress={() => navigation.navigate("Explore")}
+                    style={styles.button}
                 >
-                    <Text style={styles.buttonText}>Explore locations</Text>
+                    <Text style={styles.buttonText}>Explore Locations</Text>
                 </Pressable>
-            </View>
-            {/* Featured destinations */}
-            <View style={styles.sectionHeader}>
-                <Text style={styles.sectionTitle}>
-                    Featured destinations
-                </Text>
 
-                <Pressable onPress={() => navigation.navigate("Explore")}>
-                    <Text style={styles.seeAll}>See all</Text>
-                </Pressable>
-            </View>
+                <View style={styles.sectionHeader}>
+                    <Text style={styles.sectionTitle}>Featured Locations</Text>
+                    <Pressable onPress={() => navigation.navigate("Explore")}>
+                        <Text style={styles.seeAll}>See all</Text>
+                    </Pressable>
+                </View>
 
-            <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                style={styles.horizontalList}
-            >
-                <LocationCard
-                    name="Algonquin Park"
-                    province="Ontario, Canada"
-                    description="Explore beautiful forests and lakes."
-                    onPress={() =>
-                        navigation.navigate("Weather", {
-                            locationName: "Algonquin Provincial Park",
-                        })
-                    }
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                    <LocationCard
+                        name="Algonquin Park"
+                        province="Ontario, Canada"
+                        description="Beautiful forests and lakes."
+                        onPress={() =>
+                            navigation.navigate("Weather", {
+                                locationName: "Algonquin Provincial Park",
+                            })
+                        }
+                    />
+
+                    <LocationCard
+                        name="Banff National Park"
+                        province="Alberta, Canada"
+                        description="Enjoy mountain views."
+                        onPress={() =>
+                            navigation.navigate("Weather", {
+                                locationName: "Banff National Park",
+                            })
+                        }
+                    />
+                </ScrollView>
+
+                <View style={styles.sectionHeader}>
+                    <Text style={styles.sectionTitle}>Upcoming Trips</Text>
+                    <Pressable onPress={() => navigation.navigate("My Trips")}>
+                        <Text style={styles.seeAll}>See all</Text>
+                    </Pressable>
+                </View>
+
+                <TripCard
+                    title="Weekend Camping"
+                    location="Algonquin Park"
+                    date="Plan your next trip"
                 />
 
-                <LocationCard
-                    name="Banff National Park"
-                    province="Alberta, Canada"
-                    description="Enjoy incredible mountain views."
-                    onPress={() =>
-                        navigation.navigate("Weather", {
-                            locationName: "Banff National Park",
-                        })
-                    }
+                <TripCard
+                    title="Mountain Adventure"
+                    location="Banff National Park"
+                    date="Start planning"
                 />
-            </ScrollView>
 
-            {/* Upcoming trips */}
-            <View style={styles.sectionHeader}>
-                <Text style={styles.sectionTitle}>Upcoming trips</Text>
-
-                <Pressable onPress={() => navigation.navigate("My Trips")}>
-                    <Text style={styles.seeAll}>See all</Text>
-                </Pressable>
-            </View>
-
-            <TripCard
-                title="Weekend Camping"
-                location="Algonquin Park"
-                date="Plan your next trip"
-            />
-
-            <TripCard
-                title="Mountain Adventure"
-                location="Banff National Park"
-                date="Start planning"
-            />
-
-            <View style={styles.bottomMessage}>
                 <Text style={styles.bottomText}>
-                    🌿 Adventure starts with CampMate.
+                    🌿 Enjoy your next adventure with CampMate!
                 </Text>
             </View>
         </ScrollView>
@@ -107,64 +90,52 @@ const styles = StyleSheet.create({
         backgroundColor: "#F5F7F2",
     },
     content: {
-        padding: 20,
-        paddingBottom: 30,
-    },
-    welcomeCard: {
-        backgroundColor: "#285943",
-        padding: 22,
-        borderRadius: 18,
-        marginBottom: 28,
+        padding: 16,
     },
     welcomeTitle: {
-        fontSize: 22,
+        fontSize: 20,
         fontWeight: "bold",
-        color: "#FFFFFF",
+        color: "#285943",
+        marginTop: 10,
     },
     welcomeText: {
         fontSize: 14,
-        color: "#E5EEE6",
-        lineHeight: 21,
-        marginTop: 10,
+        color: "#555555",
+        marginTop: 6,
+        marginBottom: 12,
     },
-    exploreButton: {
-        backgroundColor: "#FFFFFF",
-        paddingVertical: 12,
-        paddingHorizontal: 18,
-        borderRadius: 10,
+    button: {
+        backgroundColor: "#285943",
+        padding: 10,
+        borderRadius: 5,
         alignSelf: "flex-start",
-        marginTop: 18,
+        marginBottom: 25,
     },
     buttonText: {
-        color: "#285943",
-        fontWeight: "bold",
+        color: "white",
         fontSize: 14,
     },
     sectionHeader: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 14,
+        marginBottom: 12,
+        marginTop: 10,
     },
     sectionTitle: {
-        fontSize: 19,
+        fontSize: 18,
         fontWeight: "bold",
         color: "#24352B",
     },
     seeAll: {
         color: "#285943",
-        fontWeight: "bold",
         fontSize: 13,
-    },
-    horizontalList: {
-        marginBottom: 28,
-    },
-    bottomMessage: {
-        alignItems: "center",
-        marginTop: 15,
     },
     bottomText: {
+        textAlign: "center",
         color: "#68756B",
         fontSize: 13,
+        marginTop: 20,
+        marginBottom: 15,
     },
 });

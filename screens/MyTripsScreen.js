@@ -10,7 +10,6 @@ const trips = [
         location: "Algonquin Provincial Park, Ontario",
         dates: "June 12 – June 14, 2027",
         status: "Upcoming",
-        emoji: "🌲",
     },
     {
         id: "2",
@@ -18,7 +17,6 @@ const trips = [
         location: "Banff National Park, Alberta",
         dates: "July 20 – July 25, 2027",
         status: "Upcoming",
-        emoji: "🏔️",
     },
     {
         id: "3",
@@ -26,7 +24,6 @@ const trips = [
         location: "Bruce Peninsula, Ontario",
         dates: "August 5 – August 8, 2026",
         status: "Past",
-        emoji: "🏕️",
     },
 ];
 
@@ -48,30 +45,25 @@ export default function MyTripsScreen() {
         <ScrollView
             style={styles.container}
             contentContainerStyle={styles.content}
-            showsVerticalScrollIndicator={false}
         >
             <Header
                 title="My Trips"
                 subtitle="All your camping adventures in one place."
             />
-            <View style={styles.summaryCard}>
-                <Text style={styles.summaryNumber}>{trips.length}</Text>
-                <Text style={styles.summaryLabel}>Total adventures planned</Text>
-                <Text style={styles.summaryEmoji}>⛺</Text>
-            </View>
 
-            <View style={styles.tabContainer}>
+            <Text style={styles.totalText}>
+                Total trips: {trips.length}
+            </Text>
+
+            <View style={styles.tabs}>
                 <Pressable
-                    style={[
-                        styles.tab,
-                        selectedTab === "Upcoming" && styles.activeTab,
-                    ]}
                     onPress={() => setSelectedTab("Upcoming")}
+                    style={styles.tab}
                 >
                     <Text
                         style={[
                             styles.tabText,
-                            selectedTab === "Upcoming" && styles.activeTabText,
+                            selectedTab === "Upcoming" && styles.activeTab,
                         ]}
                     >
                         Upcoming
@@ -79,16 +71,13 @@ export default function MyTripsScreen() {
                 </Pressable>
 
                 <Pressable
-                    style={[
-                        styles.tab,
-                        selectedTab === "Past" && styles.activeTab,
-                    ]}
                     onPress={() => setSelectedTab("Past")}
+                    style={styles.tab}
                 >
                     <Text
                         style={[
                             styles.tabText,
-                            selectedTab === "Past" && styles.activeTabText,
+                            selectedTab === "Past" && styles.activeTab,
                         ]}
                     >
                         Past trips
@@ -96,58 +85,51 @@ export default function MyTripsScreen() {
                 </Pressable>
             </View>
 
-            <View style={styles.sectionHeader}>
-                <Text style={styles.sectionTitle}>
-                    {selectedTab === "Upcoming"
-                        ? "Your next adventures"
-                        : "Your previous adventures"}
-                </Text>
-                <Text style={styles.tripCount}>
-                    {filteredTrips.length} trips
-                </Text>
-            </View>
+            <Text style={styles.sectionTitle}>
+                {selectedTab === "Upcoming"
+                    ? "Your next adventures"
+                    : "Your previous adventures"}
+            </Text>
+
+            <Text style={styles.tripCount}>
+                {filteredTrips.length} trips
+            </Text>
 
             {filteredTrips.length > 0 ? (
                 filteredTrips.map((trip) => (
-                    <View key={trip.id} style={styles.tripCard}>
-                        <View style={styles.tripImage}>
-                            <Text style={styles.tripEmoji}>{trip.emoji}</Text>
-                        </View>
-
+                    <View key={trip.id} style={styles.trip}>
                         <View style={styles.tripDetails}>
-                            <Text style={styles.tripTitle}>{trip.title}</Text>
-
-                            <Text style={styles.tripLocation}>
-                                📍 {trip.location}
+                            <Text style={styles.tripTitle}>
+                                {trip.title}
                             </Text>
 
-                            <Text style={styles.tripDate}>
-                                📅 {trip.dates}
+                            <Text style={styles.tripInfo}>
+                                {trip.location}
                             </Text>
 
-                            <View style={styles.statusBadge}>
-                                <Text style={styles.statusText}>
-                                    {trip.status}
-                                </Text>
-                            </View>
+                            <Text style={styles.tripInfo}>
+                                {trip.dates}
+                            </Text>
+
+                            <Text style={styles.status}>
+                                Status: {trip.status}
+                            </Text>
                         </View>
                     </View>
                 ))
             ) : (
-                <View style={styles.emptyContainer}>
-                    <Text style={styles.emptyEmoji}>🏕️</Text>
-                    <Text style={styles.emptyTitle}>No trips yet</Text>
-                    <Text style={styles.emptyText}>
-                        Your camping adventures will appear here.
-                    </Text>
-                </View>
+                <Text style={styles.emptyText}>
+                    No trips yet. Your camping adventures will appear here.
+                </Text>
             )}
 
             <Pressable
                 style={styles.addButton}
                 onPress={handleAddTrip}
             >
-                <Text style={styles.addButtonText}>＋ Plan a Trip</Text>
+                <Text style={styles.addButtonText}>
+                    + Plan a Trip
+                </Text>
             </Pressable>
         </ScrollView>
     );
@@ -159,153 +141,83 @@ const styles = StyleSheet.create({
         backgroundColor: "#F5F7F2",
     },
     content: {
-        padding: 20,
-        paddingBottom: 35,
+        padding: 16,
     },
-    summaryCard: {
-        backgroundColor: "#285943",
-        borderRadius: 18,
-        padding: 20,
-        marginBottom: 25,
+    totalText: {
+        fontSize: 15,
+        color: "#285943",
+        marginBottom: 20,
     },
-    summaryNumber: {
-        fontSize: 34,
-        fontWeight: "bold",
-        color: "#FFFFFF",
-    },
-    summaryLabel: {
-        fontSize: 14,
-        color: "#E4EDE4",
-        marginTop: 4,
-    },
-    summaryEmoji: {
-        position: "absolute",
-        right: 20,
-        top: 20,
-        fontSize: 42,
-    },
-    tabContainer: {
+    tabs: {
         flexDirection: "row",
-        backgroundColor: "#E8EDE5",
-        borderRadius: 12,
-        padding: 4,
-        marginBottom: 25,
+        marginBottom: 20,
+        borderBottomWidth: 1,
+        borderBottomColor: "#CCCCCC",
     },
     tab: {
         flex: 1,
-        paddingVertical: 11,
+        paddingVertical: 10,
         alignItems: "center",
-        borderRadius: 9,
-    },
-    activeTab: {
-        backgroundColor: "#FFFFFF",
-        elevation: 2,
     },
     tabText: {
-        color: "#68756B",
-        fontWeight: "600",
+        fontSize: 15,
+        color: "#666666",
     },
-    activeTabText: {
+    activeTab: {
         color: "#285943",
-    },
-    sectionHeader: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: 15,
+        fontWeight: "bold",
+        textDecorationLine: "underline",
     },
     sectionTitle: {
         fontSize: 18,
         fontWeight: "bold",
         color: "#24352B",
-        flex: 1,
     },
     tripCount: {
-        color: "#68756B",
         fontSize: 13,
+        color: "#666666",
+        marginTop: 5,
+        marginBottom: 10,
     },
-    tripCard: {
-        backgroundColor: "#FFFFFF",
-        borderRadius: 16,
-        marginBottom: 15,
-        padding: 14,
-        flexDirection: "row",
-        elevation: 2,
-    },
-    tripImage: {
-        width: 85,
-        height: 105,
-        backgroundColor: "#DCE8D8",
-        borderRadius: 12,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    tripEmoji: {
-        fontSize: 38,
+    trip: {
+        paddingVertical: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: "#D5DAD2",
     },
     tripDetails: {
         flex: 1,
-        marginLeft: 13,
     },
     tripTitle: {
         fontSize: 16,
         fontWeight: "bold",
-        color: "#24352B",
+        color: "#285943",
         marginBottom: 7,
     },
-    tripLocation: {
-        fontSize: 12,
-        color: "#68756B",
-        marginBottom: 6,
+    tripInfo: {
+        fontSize: 13,
+        color: "#555555",
+        marginBottom: 5,
     },
-    tripDate: {
-        fontSize: 12,
-        color: "#68756B",
-        marginBottom: 9,
-    },
-    statusBadge: {
-        backgroundColor: "#E5EFE3",
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderRadius: 8,
-        alignSelf: "flex-start",
-    },
-    statusText: {
+    status: {
+        fontSize: 13,
         color: "#285943",
-        fontSize: 11,
-        fontWeight: "bold",
-    },
-    emptyContainer: {
-        alignItems: "center",
-        padding: 35,
-        backgroundColor: "#FFFFFF",
-        borderRadius: 16,
-    },
-    emptyEmoji: {
-        fontSize: 45,
-        marginBottom: 12,
-    },
-    emptyTitle: {
-        fontSize: 18,
-        fontWeight: "bold",
-        color: "#24352B",
+        marginTop: 3,
     },
     emptyText: {
-        fontSize: 13,
-        color: "#68756B",
-        marginTop: 7,
-        textAlign: "center",
+        fontSize: 14,
+        color: "#666666",
+        marginTop: 15,
     },
     addButton: {
         backgroundColor: "#285943",
-        padding: 16,
-        borderRadius: 13,
+        padding: 12,
         alignItems: "center",
-        marginTop: 15,
+        borderRadius: 5,
+        marginTop: 25,
+        alignSelf: "flex-start",
     },
     addButtonText: {
         color: "#FFFFFF",
-        fontSize: 16,
-        fontWeight: "bold",
+        fontSize: 14,
     },
 });

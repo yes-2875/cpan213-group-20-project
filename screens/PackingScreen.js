@@ -20,10 +20,6 @@ export default function PackingScreen() {
     const [newItem, setNewItem] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("Essentials");
 
-    const packedCount = items.filter((item) => item.packed).length;
-    const progress =
-        items.length === 0 ? 0 : packedCount / items.length;
-
     const toggleItem = (id) => {
         setItems((currentItems) =>
             currentItems.map((item) =>
@@ -61,85 +57,48 @@ export default function PackingScreen() {
         <ScrollView
             style={styles.container}
             contentContainerStyle={styles.content}
-            showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
         >
             <Header
                 title="Packing Checklist"
-                subtitle="Everything you need for your next adventure."
+                subtitle="Make sure you have everything for your trip."
             />
-
-            <View style={styles.progressCard}>
-                <View style={styles.progressHeader}>
-                    <View>
-                        <Text style={styles.progressTitle}>Your progress</Text>
-                        <Text style={styles.progressSubtitle}>
-                            {packedCount} of {items.length} items packed
-                        </Text>
-                    </View>
-
-                    <Text style={styles.progressPercentage}>
-                        {Math.round(progress * 100)}%
-                    </Text>
-                </View>
-
-                <View style={styles.progressBackground}>
-                    <View
-                        style={[
-                            styles.progressFill,
-                            { width: `${progress * 100}%` },
-                        ]}
-                    />
-                </View>
-
-                <Text style={styles.progressMessage}>
-                    {progress === 1
-                        ? "You're all packed. Ready to go! 🎉"
-                        : "Keep going! You're getting ready for your trip."}
-                </Text>
-            </View>
 
             <Text style={styles.sectionTitle}>Add a new item</Text>
 
-            <View style={styles.addCard}>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Enter item name..."
-                    placeholderTextColor="#929C92"
-                    value={newItem}
-                    onChangeText={setNewItem}
-                />
+            <TextInput
+                style={styles.input}
+                placeholder="Enter item name..."
+                value={newItem}
+                onChangeText={setNewItem}
+            />
 
-                <Text style={styles.categoryLabel}>Choose a category</Text>
+            <Text style={styles.categoryLabel}>Category:</Text>
 
-                <View style={styles.categorySelector}>
-                    {categories.map((category) => (
-                        <Pressable
-                            key={category}
+            <View style={styles.categorySelector}>
+                {categories.map((category) => (
+                    <Pressable
+                        key={category}
+                        onPress={() => setSelectedCategory(category)}
+                    >
+                        <Text
                             style={[
                                 styles.categoryOption,
                                 selectedCategory === category &&
                                 styles.selectedCategory,
                             ]}
-                            onPress={() => setSelectedCategory(category)}
                         >
-                            <Text
-                                style={[
-                                    styles.categoryOptionText,
-                                    selectedCategory === category &&
-                                    styles.selectedCategoryText,
-                                ]}
-                            >
-                                {category}
-                            </Text>
-                        </Pressable>
-                    ))}
-                </View>
-
-                <Pressable style={styles.addButton} onPress={addItem}>
-                    <Text style={styles.addButtonText}>＋ Add item</Text>
-                </Pressable>
+                            {category}
+                        </Text>
+                    </Pressable>
+                ))}
             </View>
+
+            <Pressable style={styles.addButton} onPress={addItem}>
+                <Text style={styles.addButtonText}>+ Add item</Text>
+            </Pressable>
+
+            <View style={styles.divider} />
 
             {categories.map((category) => {
                 const categoryItems = items.filter(
@@ -148,57 +107,45 @@ export default function PackingScreen() {
 
                 return (
                     <View key={category} style={styles.categorySection}>
-                        <View style={styles.categoryHeader}>
-                            <Text style={styles.sectionTitle}>{category}</Text>
-                            <Text style={styles.itemCount}>
-                                {categoryItems.filter((item) => item.packed).length}/
-                                {categoryItems.length} packed
+                        <Text style={styles.sectionTitle}>
+                            {category}
+                        </Text>
+
+                        {categoryItems.length > 0 ? (
+                            categoryItems.map((item) => (
+                                <View key={item.id} style={styles.itemRow}>
+                                    <Pressable
+                                        style={styles.itemMain}
+                                        onPress={() => toggleItem(item.id)}
+                                    >
+                                        <Text style={styles.checkbox}>
+                                            {item.packed ? "☑" : "☐"}
+                                        </Text>
+
+                                        <Text
+                                            style={[
+                                                styles.itemName,
+                                                item.packed && styles.packedItem,
+                                            ]}
+                                        >
+                                            {item.name}
+                                        </Text>
+                                    </Pressable>
+
+                                    <Pressable
+                                        onPress={() => deleteItem(item.id)}
+                                    >
+                                        <Text style={styles.deleteText}>
+                                            Delete
+                                        </Text>
+                                    </Pressable>
+                                </View>
+                            ))
+                        ) : (
+                            <Text style={styles.emptyText}>
+                                No items yet.
                             </Text>
-                        </View>
-
-                        <View style={styles.listCard}>
-                            {categoryItems.length > 0 ? (
-                                categoryItems.map((item) => (
-                                    <View key={item.id} style={styles.itemRow}>
-                                        <Pressable
-                                            style={styles.itemMain}
-                                            onPress={() => toggleItem(item.id)}
-                                        >
-                                            <View
-                                                style={[
-                                                    styles.checkbox,
-                                                    item.packed && styles.checkedBox,
-                                                ]}
-                                            >
-                                                {item.packed && (
-                                                    <Text style={styles.checkmark}>✓</Text>
-                                                )}
-                                            </View>
-
-                                            <Text
-                                                style={[
-                                                    styles.itemName,
-                                                    item.packed && styles.packedItem,
-                                                ]}
-                                            >
-                                                {item.name}
-                                            </Text>
-                                        </Pressable>
-
-                                        <Pressable
-                                            onPress={() => deleteItem(item.id)}
-                                            style={styles.deleteButton}
-                                        >
-                                            <Text style={styles.deleteText}>✕</Text>
-                                        </Pressable>
-                                    </View>
-                                ))
-                            ) : (
-                                <Text style={styles.emptyText}>
-                                    No items in this category yet.
-                                </Text>
-                            )}
-                        </View>
+                        )}
                     </View>
                 );
             })}
@@ -212,140 +159,71 @@ const styles = StyleSheet.create({
         backgroundColor: "#F5F7F2",
     },
     content: {
-        padding: 20,
-        paddingBottom: 35,
-    },
-    progressCard: {
-        backgroundColor: "#285943",
-        borderRadius: 18,
-        padding: 20,
-        marginBottom: 25,
-    },
-    progressHeader: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-    },
-    progressTitle: {
-        fontSize: 18,
-        fontWeight: "bold",
-        color: "#FFFFFF",
-    },
-    progressSubtitle: {
-        fontSize: 13,
-        color: "#E4EDE4",
-        marginTop: 5,
-    },
-    progressPercentage: {
-        fontSize: 25,
-        fontWeight: "bold",
-        color: "#FFFFFF",
-    },
-    progressBackground: {
-        height: 9,
-        backgroundColor: "#547765",
-        borderRadius: 10,
-        marginTop: 18,
-        overflow: "hidden",
-    },
-    progressFill: {
-        height: "100%",
-        backgroundColor: "#C5D8A4",
-        borderRadius: 10,
-    },
-    progressMessage: {
-        color: "#E4EDE4",
-        fontSize: 12,
-        marginTop: 12,
+        padding: 16,
+        paddingBottom: 30,
     },
     sectionTitle: {
         fontSize: 18,
         fontWeight: "bold",
-        color: "#24352B",
-    },
-    addCard: {
-        backgroundColor: "#FFFFFF",
-        padding: 16,
-        borderRadius: 16,
-        marginTop: 12,
-        marginBottom: 25,
-        elevation: 2,
+        color: "#285943",
+        marginBottom: 10,
     },
     input: {
-        backgroundColor: "#F5F7F2",
-        borderRadius: 10,
-        padding: 13,
+        backgroundColor: "#FFFFFF",
+        borderWidth: 1,
+        borderColor: "#CCCCCC",
+        padding: 11,
+        borderRadius: 5,
         fontSize: 14,
-        color: "#24352B",
     },
     categoryLabel: {
-        color: "#68756B",
-        fontSize: 13,
+        fontSize: 14,
+        color: "#555555",
         marginTop: 15,
-        marginBottom: 10,
+        marginBottom: 8,
     },
     categorySelector: {
         flexDirection: "row",
         flexWrap: "wrap",
-        gap: 8,
+        gap: 12,
     },
     categoryOption: {
-        paddingHorizontal: 11,
-        paddingVertical: 9,
-        borderRadius: 9,
-        backgroundColor: "#F0F3ED",
+        color: "#666666",
+        paddingVertical: 7,
+        fontSize: 13,
     },
     selectedCategory: {
-        backgroundColor: "#DCE8D8",
-        borderWidth: 1,
-        borderColor: "#285943",
-    },
-    categoryOptionText: {
-        fontSize: 12,
-        color: "#68756B",
-    },
-    selectedCategoryText: {
         color: "#285943",
         fontWeight: "bold",
+        textDecorationLine: "underline",
     },
     addButton: {
         backgroundColor: "#285943",
-        padding: 13,
-        borderRadius: 10,
+        padding: 11,
+        borderRadius: 5,
         alignItems: "center",
+        alignSelf: "flex-start",
         marginTop: 15,
     },
     addButtonText: {
         color: "#FFFFFF",
-        fontWeight: "bold",
         fontSize: 14,
     },
+    divider: {
+        borderBottomWidth: 1,
+        borderBottomColor: "#D5DAD2",
+        marginVertical: 25,
+    },
     categorySection: {
-        marginBottom: 23,
-    },
-    categoryHeader: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: 12,
-    },
-    itemCount: {
-        fontSize: 12,
-        color: "#68756B",
-    },
-    listCard: {
-        backgroundColor: "#FFFFFF",
-        borderRadius: 15,
-        paddingHorizontal: 15,
-        elevation: 2,
+        marginBottom: 25,
     },
     itemRow: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        paddingVertical: 15,
+        paddingVertical: 12,
         borderBottomWidth: 1,
-        borderBottomColor: "#EEF0EB",
+        borderBottomColor: "#D5DAD2",
     },
     itemMain: {
         flexDirection: "row",
@@ -353,23 +231,9 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     checkbox: {
-        width: 22,
-        height: 22,
-        borderWidth: 1.5,
-        borderColor: "#A3B18A",
-        borderRadius: 6,
-        alignItems: "center",
-        justifyContent: "center",
-        marginRight: 12,
-    },
-    checkedBox: {
-        backgroundColor: "#285943",
-        borderColor: "#285943",
-    },
-    checkmark: {
-        color: "#FFFFFF",
-        fontSize: 14,
-        fontWeight: "bold",
+        fontSize: 22,
+        color: "#285943",
+        marginRight: 10,
     },
     itemName: {
         fontSize: 14,
@@ -379,18 +243,14 @@ const styles = StyleSheet.create({
         textDecorationLine: "line-through",
         color: "#929C92",
     },
-    deleteButton: {
-        paddingHorizontal: 8,
-        paddingVertical: 5,
-    },
     deleteText: {
         color: "#A66B61",
-        fontSize: 15,
+        fontSize: 12,
+        padding: 6,
     },
     emptyText: {
-        color: "#929C92",
         fontSize: 13,
-        paddingVertical: 18,
-        textAlign: "center",
+        color: "#777777",
+        marginTop: 5,
     },
 });
