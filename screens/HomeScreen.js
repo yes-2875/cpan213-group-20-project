@@ -1,4 +1,3 @@
-import React from "react";
 import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
 
 import Header from "../components/Header";
