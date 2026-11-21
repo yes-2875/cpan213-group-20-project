@@ -1,5 +1,17 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TextInput, ScrollView, Pressable } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import {
+    View,
+    Text,
+    StyleSheet,
+    TextInput,
+    ScrollView,
+    Pressable,
+    ActivityIndicator,
+} from "react-native";
+import {
+    fetchCurrentWeatherForLocations,
+    describeWeatherCode,
+} from "../services/weatherApi";
 
 const destinations = [
     {
@@ -42,6 +54,51 @@ const destinations = [
 
 export default function ExploreScreen({ navigation }) {
     const [search, setSearch] = useState("");
+    const [currentWeather, setCurrentWeather] = useState({});
+    const [isWeatherLoading, setIsWeatherLoading] = useState(true);
+    const [weatherError, setWeatherError] = useState("");
+
+    // Fetch the current temperature for every destination in one request.
+    const loadCurrentWeather = useCallback(async () => {
+        setIsWeatherLoading(true);
+        setWeatherError("");
+
+        try {
+            const weatherById = await fetchCurrentWeatherForLocations(destinations);
+            setCurrentWeather(weatherById);
+        } catch (error) {
+            setWeatherError(error.message);
+        } finally {
+            setIsWeatherLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        loadCurrentWeather();
+    }, [loadCurrentWeather]);
+
+    function renderWeatherBadge(destinationId) {
+        if (isWeatherLoading) {
+            return <ActivityIndicator size="small" color="#285943" />;
+        }
+
+        const weather = currentWeather[destinationId];
+
+        if (!weather) {
+            return <Text style={styles.weatherUnavailable}>--</Text>;
+        }
+
+        const condition = describeWeatherCode(weather.weatherCode, weather.isDay);
+
+        return (
+            <View style={styles.weatherBadge}>
+                <Text style={styles.weatherIcon}>{condition.icon}</Text>
+                <Text style={styles.weatherTemp}>
+                    {Math.round(weather.temperature)}°C
+                </Text>
+            </View>
+        );
+    }
 
     const filteredDestinations = destinations.filter((destination) =>
         destination.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -72,6 +129,17 @@ export default function ExploreScreen({ navigation }) {
                     Popular Destinations ({filteredDestinations.length})
                 </Text>
 
+                {weatherError ? (
+                    <View style={styles.weatherErrorBox}>
+                        <Text style={styles.weatherErrorText}>
+                            Current temperatures couldn't be loaded. {weatherError}
+                        </Text>
+                        <Pressable onPress={loadCurrentWeather}>
+                            <Text style={styles.retryText}>Retry</Text>
+                        </Pressable>
+                    </View>
+                ) : null}
+
                 {filteredDestinations.length > 0 ? (
                     filteredDestinations.map((destination) => (
                         <Pressable
@@ -80,15 +148,19 @@ export default function ExploreScreen({ navigation }) {
                             onPress={() =>
                                 navigation.navigate("Weather", {
                                     locationName: destination.name,
+                                    province: destination.province,
                                     latitude: destination.latitude,
                                     longitude: destination.longitude,
                                 })
                             }
                         >
                             <View style={styles.destinationInfo}>
-                                <Text style={styles.destinationName}>
-                                    {destination.name}
-                                </Text>
+                                <View style={styles.nameRow}>
+                                    <Text style={styles.destinationName}>
+                                        {destination.name}
+                                    </Text>
+                                    {renderWeatherBadge(destination.id)}
+                                </View>
 
                                 <Text style={styles.province}>
                                     {destination.province}
@@ -157,7 +229,14 @@ const styles = StyleSheet.create({
     destinationInfo: {
         flex: 1,
     },
+    nameRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+    },
     destinationName: {
+        flex: 1,
+        marginRight: 10,
         fontSize: 16,
         fontWeight: "bold",
         color: "#285943",
@@ -176,6 +255,47 @@ const styles = StyleSheet.create({
         fontSize: 13,
         color: "#285943",
         marginTop: 8,
+    },
+    weatherBadge: {
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: "#E6EDDF",
+        borderRadius: 12,
+        paddingVertical: 4,
+        paddingHorizontal: 10,
+    },
+    weatherIcon: {
+        fontSize: 15,
+        marginRight: 4,
+    },
+    weatherTemp: {
+        fontSize: 14,
+        fontWeight: "bold",
+        color: "#24352B",
+    },
+    weatherUnavailable: {
+        fontSize: 14,
+        color: "#888888",
+    },
+    weatherErrorBox: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        backgroundColor: "#FBEAEA",
+        borderRadius: 8,
+        padding: 12,
+        marginBottom: 6,
+    },
+    weatherErrorText: {
+        flex: 1,
+        color: "#8A1C1C",
+        fontSize: 13,
+        marginRight: 10,
+    },
+    retryText: {
+        color: "#285943",
+        fontSize: 14,
+        fontWeight: "bold",
     },
     emptyText: {
         fontSize: 14,
